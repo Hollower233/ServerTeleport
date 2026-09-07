@@ -1,7 +1,7 @@
 [package]
 name = "hollower233/serverteleport"
 description = "Generic server teleport management: pooled reserved-server registry, heartbeat, discovery, and teleport for persistent shared reserved-server hubs."
-version = "0.1.1"
+version = "0.1.2"
 license = "MIT"
 authors = ["Hollower233"]
 realm = "shared"

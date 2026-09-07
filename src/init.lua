@@ -83,9 +83,7 @@ local function startPool(poolName: string, accessCode: string?)
 	end
 end
 
-local server = {}
-
-function server.init(studioSetServer: string?)
+local function init(studioSetServer: string?)
 	if initialized then
 		error("[ServerTeleport] init() called more than once")
 	end
@@ -118,7 +116,7 @@ function server.init(studioSetServer: string?)
 	end)
 end
 
-function server.teleport(poolName: string, args: TeleportArgs)
+local function teleport(poolName: string, args: TeleportArgs)
 	if not initialized then
 		error("[ServerTeleport] teleport() called before init()")
 	end
@@ -152,7 +150,7 @@ function server.teleport(poolName: string, args: TeleportArgs)
 	end
 end
 
-function server.getActiveReservedServers(
+local function getActiveReservedServers(
 	poolName: string,
 	sortField: ("playerCount" | "liveTime")?,
 	sortDesc: boolean?,
@@ -202,9 +200,9 @@ end
 
 return {
 	server = {
-		init = server.init,
-		teleport = server.teleport,
-		getActiveReservedServers = server.getActiveReservedServers,
+		init = init,
+		teleport = teleport,
+		getActiveReservedServers = getActiveReservedServers,
 	},
 	getServerType = getServerType,
 }
