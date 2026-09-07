@@ -46,7 +46,20 @@ end
 local function startPool(poolName: string, accessCode: string?)
 	local regs = getRegistries(poolName)
 
+	-- game.JobId 只在真实发布服务器上非空；Studio 里恒为 ""，MemoryStoreService 不接受空 key，
+	-- 写入会必定失败。studioSetServer 走的正是这种"假装成保留服"的 Studio 会话，跳过心跳写入
+	-- （只 warn 一次，不逐次心跳都刷），保留服发现在 Studio 下本就测不出来，属已知限制。
+	local warnedEmptyJobId = false
+
 	local function writeHeartbeat()
+		if game.JobId == "" then
+			if not warnedEmptyJobId then
+				warnedEmptyJobId = true
+				warn("[ServerTeleport] game.JobId 为空（Studio 会话），跳过心跳写入；保留服发现在 Studio 下不可用")
+			end
+			return
+		end
+
 		local info: ReservedServerInfo = {
 			accessCode = accessCode :: string,
 			privateServerId = game.PrivateServerId,
@@ -67,6 +80,10 @@ local function startPool(poolName: string, accessCode: string?)
 	end
 
 	game:BindToClose(function()
+		if game.JobId == "" then
+			-- 心跳本来就没写进去（见 writeHeartbeat），没有可注销的条目。
+			return
+		end
 		local ok1, err1 = pcall(regs.registry.RemoveAsync, regs.registry, game.JobId)
 		if not ok1 then
 			warn("[ServerTeleport] deregister failed (registry): " .. tostring(err1))

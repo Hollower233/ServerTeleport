@@ -29,6 +29,8 @@ Resolution order:
 
 This does not yield the calling script — the wait for a player (step 3) runs in the background. Calling `init` more than once is an error.
 
+`game.JobId` is always empty in Studio (only real published servers get one), and `MemoryStoreService` rejects an empty key — so when a Studio session resolves to a reserved server (via `studioSetServer`), the heartbeat loop skips its `MemoryStoreService` writes (one `warn`, not per-heartbeat) instead of failing every 20s. This means `getActiveReservedServers` will never see Studio sessions as candidates — reserved-server discovery is untestable in Studio and only works on real published servers.
+
 ### `ServerTeleport.server.teleport(poolName: string, args: TeleportArgs)`
 
 Teleports `args.plrList` to a reserved server in `poolName`. If `args.reservedServerAccessCode` is omitted and `args.targetServer` is `"reserved"` (the default), reserves a brand-new server via `TeleportService:ReserveServerAsync`. Embeds `__poolName` (and, when reserving/joining a specific reserved server, `__reservedServerAccessCode`) into the outgoing `TeleportData` so the destination server can identify itself in `init()`.
