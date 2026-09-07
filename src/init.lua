@@ -201,6 +201,10 @@ local function getServerType(): string
 end
 
 return {
-	server = server,
+	server = {
+		init = server.init,
+		teleport = server.teleport,
+		getActiveReservedServers = server.getActiveReservedServers,
+	},
 	getServerType = getServerType,
 }
