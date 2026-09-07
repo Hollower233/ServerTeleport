@@ -1,0 +1,11 @@
+[package]
+name = "hollower233/serverteleport"
+description = "Generic server teleport management: pooled reserved-server registry, heartbeat, discovery, and teleport for persistent shared reserved-server hubs."
+version = "0.1.0"
+license = "MIT"
+authors = ["Hollower233"]
+realm = "shared"
+registry = "https://github.com/UpliftGames/wally-index"
+repository = "https://github.com/Hollower233/ServerTeleport"
+
+[dependencies]
