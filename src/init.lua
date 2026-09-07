@@ -200,9 +200,22 @@ end
 
 return {
 	server = {
-		init = init,
-		teleport = teleport,
-		getActiveReservedServers = getActiveReservedServers,
+		-- 服务端引导脚本调用一次；异步判断当前服务器类型（standard 或具体 poolName），
+		-- 如果是保留服则启动该池的心跳写入。重复调用会 error()。
+		init = init :: (studioSetServer: string?) -> (),
+		-- 把 plrList 传送到 poolName 池的一个保留服；不传 reservedServerAccessCode 时会现开一个新保留服。
+		-- 需先调用过 init()，否则 error()。
+		teleport = teleport :: (poolName: string, args: TeleportArgs) -> (),
+		-- 查询 poolName 池当前活跃（60 秒内有心跳）的保留服列表，用于宿主项目自行实现"怎么分配玩家进池"的策略。
+		-- 需先调用过 init()，否则 error()。
+		getActiveReservedServers = getActiveReservedServers :: (
+			poolName: string,
+			sortField: ("playerCount" | "liveTime")?,
+			sortDesc: boolean?,
+			cursor: (number | string)?
+		) -> ({ ReservedServerInfo }, (number | string)?, string?),
 	},
-	getServerType = getServerType,
+	-- 双端通用：读取当前服务器类型（"standard" 或具体 poolName）。
+	-- 值还没就绪时会等待（不会报错），服务端 init() 完成后立刻有值，客户端等待复制完成即可。
+	getServerType = getServerType :: () -> string,
 }
